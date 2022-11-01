@@ -1,0 +1,7 @@
+.*
+**/tsconfig.json
+**/.prettierrc
+**/webpack.config.dev.js
+**/webpack.config.prod.js
+node_modules
+src
