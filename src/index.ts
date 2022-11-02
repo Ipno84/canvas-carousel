@@ -15,6 +15,7 @@ class CanvasCarousel {
     private imagesCollection: HTMLImageElement[] = []
     private parentWidth: number | void = void 0
     private resizeTimeout: ReturnType<typeof setTimeout> | null = null
+    private oldCanvasWidth?: number = void 0
 
 	constructor(selector: string, imagesPath: string[], options: CanvasCarouselOptions) {
         this._selector = selector
@@ -89,12 +90,32 @@ class CanvasCarousel {
      */
     private onResize(): void {
         if(this.resizeTimeout) clearTimeout(this.resizeTimeout)
+        if(this.options.aspectRatio && !this.oldCanvasWidth && this.canvas?.width) {
+            this.oldCanvasWidth = this.canvas?.width
+        }
         this.touch = navigator.maxTouchPoints > 0
         this.resizeTimeout = setTimeout(() => {
             this.addListeners()
             this.setupSize()
+            this.handleCanvasReduction()
             this.drawImages()
         }, this.options.resizeTimeoutReaction ?? 300)
+    }
+
+    /**
+     * Normalize canvas position on x axis form responsive point of view
+     *
+     * @private
+     * @memberof CanvasCarousel
+     */
+    private handleCanvasReduction(): void {
+        if(this.options.aspectRatio && this.canvas && this.oldCanvasWidth) {
+            const diff = this.oldCanvasWidth - this.canvas.width
+            const percentage = ((diff * 100) / this.oldCanvasWidth) / 100
+            if(!this.canvasPosition.deltaX) this.canvasPosition.deltaX = 0
+            this.canvasPosition.deltaX = this.canvasPosition.deltaX - (this.canvasPosition.deltaX * percentage)
+            this.oldCanvasWidth = void 0
+        }
     }
 
     /**
