@@ -5,4 +5,14 @@ interface CanvasCarouselOptions {
     resizeTimeoutReaction?: number
 }
 
-export { CanvasCarouselOptions };
+interface ImageSizes {
+    width: number
+    height: number
+}
+
+interface IDeltas {
+    x: number
+    y: number
+}
+
+export { CanvasCarouselOptions, ImageSizes, IDeltas };

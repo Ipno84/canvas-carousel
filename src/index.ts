@@ -1,4 +1,4 @@
-import { CanvasCarouselOptions } from "./typings"
+import { CanvasCarouselOptions, IDeltas, ImageSizes } from "./typings"
 
 class CanvasCarousel {
 
@@ -64,12 +64,14 @@ class CanvasCarousel {
      * @private
      * @memberof CanvasCarousel
      */
-    private async onInit() {
+    private onInit(): void {
         this._canvas = document.querySelector(this.selector)
         this._context = this.canvas?.getContext('2d')
+
+        if(this.context) this.context.imageSmoothingEnabled = true
         
         this.setupSize()
-        await this.prepareImages()
+        this.prepareImages()
 
         if(this.canvas?.parentElement) {
             const resizeObserver = new ResizeObserver(this.onResize);
@@ -85,7 +87,7 @@ class CanvasCarousel {
      * @private
      * @memberof CanvasCarousel
      */
-    private onResize() {
+    private onResize(): void {
         if(this.resizeTimeout) clearTimeout(this.resizeTimeout)
         this.touch = navigator.maxTouchPoints > 0
         this.resizeTimeout = setTimeout(() => {
@@ -104,7 +106,7 @@ class CanvasCarousel {
      * @param {(MouseEvent | TouchEvent)} e
      * @memberof CanvasCarousel
      */
-    private onActionStart(e: MouseEvent | TouchEvent) {
+    private onActionStart(e: MouseEvent | TouchEvent): void {
         e.preventDefault()
         this.canvasRect = this.canvas?.getBoundingClientRect()
         const event = this.touch && e instanceof TouchEvent ? e.touches[0] : e as MouseEvent
@@ -118,7 +120,7 @@ class CanvasCarousel {
      * @private
      * @memberof CanvasCarousel
      */
-    private onActionEnd() {
+    private onActionEnd(): void {
         this.canvas?.removeEventListener(this.touch ? 'touchmove' : 'mousemove', this.onActionMove)
     }
 
@@ -128,7 +130,7 @@ class CanvasCarousel {
      * @private
      * @memberof CanvasCarousel
      */
-    private onElementLeave() {
+    private onElementLeave(): void {
         this.canvas?.dispatchEvent(new Event('mouseup'))
         this.canvas?.dispatchEvent(new Event('touchend'))
     }
@@ -141,7 +143,7 @@ class CanvasCarousel {
      * @param {(MouseEvent | TouchEvent)} e
      * @memberof CanvasCarousel
      */
-    private onActionMove(e: MouseEvent | TouchEvent) {
+    private onActionMove(e: MouseEvent | TouchEvent): void {
         e.preventDefault()
         const lastXPosition = (-(this.canvas?.width ?? 0) * (this.imagesPath.length - 1))
         const event = this.touch && e instanceof TouchEvent ? e.touches[0] : e as MouseEvent
@@ -162,7 +164,7 @@ class CanvasCarousel {
      * @private
      * @memberof CanvasCarousel
      */
-    private setupCurrentIndex() {
+    private setupCurrentIndex(): void {
         if(this.canvas && typeof this.canvasPosition.deltaX !== 'undefined') {
             const nextIndex = Math.round((Math.abs(this.canvasPosition.deltaX) + this.canvas.width) / this.canvas.width) - 1
             if (nextIndex !== this.currentIndex) {
@@ -178,7 +180,7 @@ class CanvasCarousel {
      * @private
      * @memberof CanvasCarousel
      */
-    private addListeners() {
+    private addListeners(): void {
         if(this.canvas) {
             const start = this.touch ? 'touchstart' : 'mousedown'
             const end = this.touch ? 'touchend' : 'mouseup'
@@ -202,10 +204,10 @@ class CanvasCarousel {
      *
      * @private
      * @param {HTMLElement} node
-     * @return {*} 
+     * @return {*}  {ImageSizes}
      * @memberof CanvasCarousel
      */
-    private innerDimensions(node: HTMLElement) {
+    private innerDimensions(node: HTMLElement): ImageSizes {
         const computedStyle = getComputedStyle(node)
 
         let width = node.clientWidth
@@ -224,7 +226,7 @@ class CanvasCarousel {
      * @private
      * @memberof CanvasCarousel
      */
-    private setupSize() {
+    private setupSize(): void {
         if(this.canvas && this.options.aspectRatio) {
             const parentNode = this.canvas.parentNode as HTMLElement | undefined
             if(parentNode) {
@@ -239,27 +241,18 @@ class CanvasCarousel {
     }
 
     /**
-     * It fetch remote images and resolve the promise once every image has been downloaded
-     * TODO: Setup fallback behaviour
+     * It fetch remote images and draw image once every image has been downloaded
      *
      * @private
      * @return {*} 
      * @memberof CanvasCarousel
      */
-    private async prepareImages() {
-        let count = 0
-        return new Promise((resolve) => {
-            this.imagesCollection = this.imagesPath.map((src) => {
-                const image = new Image()
-                image.src = src
-                image.onload = () => {
-                    count++
-                    if(count === this.imagesPath.length) {
-                        resolve(true)
-                    }
-                }
-                return image
-            })
+    private prepareImages(): void {
+        this.imagesCollection = this.imagesPath.map((src) => {
+            const image = new Image()
+            image.src = src
+            image.onload = () => this.drawImages()
+            return image
         })
         
     }
@@ -269,10 +262,10 @@ class CanvasCarousel {
      *
      * @private
      * @param {HTMLImageElement} image
-     * @return {*}  {{width: number, height: number}}
+     * @return {*}  {ImageSizes}
      * @memberof CanvasCarousel
      */
-    private getNormalizedImageSizes(image: HTMLImageElement): {width: number, height: number} {
+    private getNormalizedImageSizes(image: HTMLImageElement): ImageSizes {
         if(this.canvas) {
             const imageAspectRatio = image.width / image.height
             if(imageAspectRatio > 1) {
@@ -299,10 +292,10 @@ class CanvasCarousel {
      * @private
      * @param {number} width
      * @param {number} height
-     * @return {*}  {{ x: number, y: number }}
+     * @return {*}  {IDeltas}
      * @memberof CanvasCarousel
      */
-    private getDeltas(width: number, height: number): { x: number, y: number } {
+    private getDeltas(width: number, height: number): IDeltas {
         if(!this.canvas) {
             return {
                 x: 0,
@@ -321,7 +314,7 @@ class CanvasCarousel {
      * @param {number} index
      * @memberof CanvasCarousel
      */
-    public goToIndex(index: number) {
+    public goToIndex(index: number): void {
         if (this.canvas && index >= 0 && index < this.imagesPath.length) {
             const delta = 0 - (this.canvas.width * index)
             this.canvasPosition.deltaX = delta
@@ -335,7 +328,7 @@ class CanvasCarousel {
      *
      * @memberof CanvasCarousel
      */
-    public goToNext() {
+    public goToNext(): void {
         this.goToIndex(this.currentIndex + 1)
     }
 
@@ -344,7 +337,7 @@ class CanvasCarousel {
      *
      * @memberof CanvasCarousel
      */
-    public goToPrev() {
+    public goToPrev(): void {
         this.goToIndex(this.currentIndex - 1)
     }
 
@@ -354,7 +347,7 @@ class CanvasCarousel {
      * @private
      * @memberof CanvasCarousel
      */
-    private drawImages() {
+    private drawImages(): void {
         this.context?.clearRect(0, 0, this.canvas?.width ?? 0, this.canvas?.height ?? 0);
         this.imagesCollection.forEach((image, index) => {
             if(this.canvas) {
