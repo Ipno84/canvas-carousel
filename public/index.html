@@ -4,9 +4,26 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>Carousel Container</title>
+        <style>
+            * {
+                box-sizing: border-box;
+            }
+            body {
+                margin: 0;
+            }
+            canvas {
+                background-color: #F2F2F2;
+            }
+        </style>
     </head>
     <body>
-        <canvas id="carousel" width="150" height="150"></canvas>
+        <div style="padding: 30px">
+            <canvas id="carousel" width="150" height="150"></canvas>
+            <button type="button" id="prev">Prev</button>
+            <button type="button" id="next">Next</button>
+            <button type="button" id="first">First</button>
+            <button type="button" id="last">Last</button>
+        </div>
     </body>
     <script type="module" src="http://localhost:8080/assets/bundle.js"></script>
 </html>
