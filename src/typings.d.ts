@@ -1,4 +1,7 @@
 interface CanvasCarouselOptions {
+    selector?: string;
+    node?: HTMLCanvasElement
+    imagesPath: string[];
 	aspectRatio?: number;
 	canvasWidth?: number;
 	canvasHeight?: number;

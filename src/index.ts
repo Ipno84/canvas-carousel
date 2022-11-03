@@ -1,12 +1,9 @@
 import { CanvasCarouselOptions, IDeltas, ImageSizes } from "./typings"
 
 class CanvasCarousel {
-
-    private _selector: string = ''
-    private _imagesPath: string[] = []
     private _canvas: HTMLCanvasElement | null = null
     private _context: CanvasRenderingContext2D | null | undefined = null
-    private _options: CanvasCarouselOptions = {}
+    private _options: CanvasCarouselOptions = { selector: '', imagesPath: [] }
     private _currentIndex: number = 0
     private _resizeObserver: ResizeObserver | null = null
     private _imagesCollection: HTMLImageElement[] = []
@@ -18,26 +15,16 @@ class CanvasCarousel {
     private resizeTimeout: ReturnType<typeof setTimeout> | null = null
     private oldCanvasWidth?: number = void 0
 
-	constructor(selector: string, imagesPath: string[], options: CanvasCarouselOptions) {
+	constructor(options: CanvasCarouselOptions) {
         this.onResize = this.onResize.bind(this)
         this.onActionStart = this.onActionStart.bind(this)
         this.onActionEnd = this.onActionEnd.bind(this)
         this.onElementLeave = this.onElementLeave.bind(this)
         this.onActionMove = this.onActionMove.bind(this)
 
-        this._selector = selector
-        this._imagesPath = imagesPath
         this._options = options
 
         this.onInit()
-    }
-
-    public get selector(): string {
-        return this._selector
-    }
-
-    public get imagesPath(): string[] {
-        return this._imagesPath
     }
 
     public get options(): CanvasCarouselOptions {
@@ -65,6 +52,20 @@ class CanvasCarousel {
     }
 
     /**
+     * It assign to internal canvas class property the proper value using the provided one or the selector
+     *
+     * @private
+     * @memberof CanvasCarousel
+     */
+    private handleCanvasAssignment(): void {
+        if(this.options.node && this.options.node instanceof HTMLCanvasElement) {
+            this._canvas = this.options.node
+        } else if(this.options.selector) {
+            this._canvas = document.querySelector(this.options.selector)
+        }
+    }
+
+    /**
      * Asyncronously initialize elements. It's triggered in constructor right after setters and method bindings
      * It will instantiate canvas element and its context, setup sizes of the canvas itself (using options),
      * and fetch remote images. It also trigger a resize observer that will observe the parent node of the canvas
@@ -74,7 +75,7 @@ class CanvasCarousel {
      * @memberof CanvasCarousel
      */
     private onInit(): void {
-        this._canvas = document.querySelector(this.selector)
+        this.handleCanvasAssignment()
         this._context = this.canvas?.getContext('2d')
 
         if(this.context) this.context.imageSmoothingEnabled = true
@@ -174,7 +175,7 @@ class CanvasCarousel {
      */
     private onActionMove(e: MouseEvent | TouchEvent): void {
         e.preventDefault()
-        const lastXPosition = (-(this.canvas?.width ?? 0) * (this.imagesPath.length - 1))
+        const lastXPosition = (-(this.canvas?.width ?? 0) * (this.options.imagesPath.length - 1))
         const event = this.touch && e instanceof TouchEvent ? e.touches[0] : e as MouseEvent
         this.coors.x = event.clientX - (this.canvasRect?.left ?? 0);
         this.canvasPosition.deltaX = (this.coors.x - (this.coors.clientX ?? 0));
@@ -277,7 +278,7 @@ class CanvasCarousel {
      * @memberof CanvasCarousel
      */
     private prepareImages(): void {
-        this._imagesCollection = this.imagesPath.map((src) => {
+        this._imagesCollection = this.options.imagesPath.map((src) => {
             const image = new Image()
             image.src = src
             image.onload = () => this.drawImages()
@@ -344,7 +345,7 @@ class CanvasCarousel {
      * @memberof CanvasCarousel
      */
     public goToIndex(index: number): void {
-        if (this.canvas && index >= 0 && index < this.imagesPath.length) {
+        if (this.canvas && index >= 0 && index < this.options.imagesPath.length) {
             const delta = 0 - (this.canvas.width * index)
             this.canvasPosition.deltaX = delta
             this.drawImages()
@@ -368,6 +369,24 @@ class CanvasCarousel {
      */
     public goToPrev(): void {
         this.goToIndex(this.currentIndex - 1)
+    }
+
+    /**
+     * It use goToIndex method to move the canvas carousel to the first slide
+     *
+     * @memberof CanvasCarousel
+     */
+     public goToFirst(): void {
+        this.goToIndex(0)
+    }
+
+    /**
+     * It use goToIndex method to move the canvas carousel to the last slide
+     *
+     * @memberof CanvasCarousel
+     */
+     public goToLast(): void {
+        this.goToIndex(this.options.imagesPath.length - 1)
     }
 
     /**

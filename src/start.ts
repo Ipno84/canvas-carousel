@@ -1,16 +1,33 @@
 import { CanvasCarousel } from './index';
 
-const canvasCarousel = new CanvasCarousel(
-	'#carousel',
-	[
+const canvasElement = document.querySelector<HTMLCanvasElement>('#carousel');
+
+const baseOptions = {
+	selector: '#carousel',
+	// node: canvasElement!,
+	imagesPath: [
 		'http://challenge.publitas.com/images/0.jpg',
 		'http://challenge.publitas.com/images/1.jpg',
 		'http://challenge.publitas.com/images/2.jpg',
 		'http://challenge.publitas.com/images/3.jpg'
 	],
-	{ aspectRatio: 0.6, resizeTimeoutReaction: 1 }
-	// { resizeTimeoutReaction: 1, canvasWidth: 200, canvasHeight: 200 }
-);
+	resizeTimeoutReaction: 1
+};
+
+const staticSizesOptions = {
+	...baseOptions,
+	canvasWidth: 200,
+	canvasHeight: 200
+};
+
+const responsiveOptions = {
+	...baseOptions,
+	aspectRatio: 0.6
+};
+
+// if(canvasElement) {
+
+const canvasCarousel = new CanvasCarousel(responsiveOptions);
 
 const buttonNext = document.getElementById('next');
 const buttonPrev = document.getElementById('prev');
@@ -34,7 +51,8 @@ buttonFirst?.addEventListener('click', e => {
 
 buttonLast?.addEventListener('click', e => {
 	e.preventDefault();
-	canvasCarousel.goToIndex(canvasCarousel.imagesPath.length - 1);
+	canvasCarousel.goToIndex(canvasCarousel.options.imagesPath.length - 1);
 });
+// }
 
 export {};
