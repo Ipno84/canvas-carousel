@@ -278,11 +278,13 @@ class CanvasCarousel {
      * @memberof CanvasCarousel
      */
     private prepareImages(): void {
-        this._imagesCollection = this.options.imagesPath.map((src) => {
+        this.options.imagesPath.forEach((src, index) => {
             const image = new Image()
             image.src = src
-            image.onload = () => this.drawImages()
-            return image
+            image.onload = () => {
+                this._imagesCollection[index] = image
+                this.drawImages()
+            }
         })
         
     }
