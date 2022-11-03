@@ -8,26 +8,26 @@ class CanvasCarousel {
     private _context: CanvasRenderingContext2D | null | undefined = null
     private _options: CanvasCarouselOptions = {}
     private _currentIndex: number = 0
+    private _resizeObserver: ResizeObserver | null = null
+    private _imagesCollection: HTMLImageElement[] = []
     private touch: boolean = navigator.maxTouchPoints > 0;
     private coors: { clientX?: number, x?: number } = {}
-    private canvasPosition: { deltaX?: number } = {}
+    private canvasPosition: { deltaX?: number } = { deltaX: 0 }
     private canvasRect?: DOMRect
-    private imagesCollection: HTMLImageElement[] = []
     private parentWidth: number | void = void 0
     private resizeTimeout: ReturnType<typeof setTimeout> | null = null
     private oldCanvasWidth?: number = void 0
 
 	constructor(selector: string, imagesPath: string[], options: CanvasCarouselOptions) {
-        this._selector = selector
-        this._imagesPath = imagesPath
-        this._options = options
-
         this.onResize = this.onResize.bind(this)
-
         this.onActionStart = this.onActionStart.bind(this)
         this.onActionEnd = this.onActionEnd.bind(this)
         this.onElementLeave = this.onElementLeave.bind(this)
         this.onActionMove = this.onActionMove.bind(this)
+
+        this._selector = selector
+        this._imagesPath = imagesPath
+        this._options = options
 
         this.onInit()
     }
@@ -56,6 +56,14 @@ class CanvasCarousel {
         return this._currentIndex
     }
 
+    public get resizeObserver(): ResizeObserver | null {
+        return this._resizeObserver
+    }
+
+    public get imagesCollection(): HTMLImageElement[] {
+        return this._imagesCollection
+    }
+
     /**
      * Asyncronously initialize elements. It's triggered in constructor right after setters and method bindings
      * It will instantiate canvas element and its context, setup sizes of the canvas itself (using options),
@@ -74,9 +82,9 @@ class CanvasCarousel {
         this.setupSize()
         this.prepareImages()
 
-        if(this.canvas?.parentElement) {
-            const resizeObserver = new ResizeObserver(this.onResize);
-            resizeObserver.observe(this.canvas.parentElement);
+        if(this.canvas?.parentElement && this.options.aspectRatio) {
+            this._resizeObserver = new ResizeObserver(this.onResize);
+            this.resizeObserver?.observe(this.canvas.parentElement);
         }
     }
 
@@ -234,8 +242,8 @@ class CanvasCarousel {
         let width = node.clientWidth
         let height = node.clientHeight
 
-        height -= parseFloat(computedStyle.paddingTop) + parseFloat(computedStyle.paddingBottom)
-        width -= parseFloat(computedStyle.paddingLeft) + parseFloat(computedStyle.paddingRight)
+        height -= Number.parseFloat(computedStyle.paddingTop) + Number.parseFloat(computedStyle.paddingBottom)
+        width -= Number.parseFloat(computedStyle.paddingLeft) + Number.parseFloat(computedStyle.paddingRight)
 
         return { height, width }
     }
@@ -269,7 +277,7 @@ class CanvasCarousel {
      * @memberof CanvasCarousel
      */
     private prepareImages(): void {
-        this.imagesCollection = this.imagesPath.map((src) => {
+        this._imagesCollection = this.imagesPath.map((src) => {
             const image = new Image()
             image.src = src
             image.onload = () => this.drawImages()
@@ -370,7 +378,7 @@ class CanvasCarousel {
      */
     private drawImages(): void {
         this.context?.clearRect(0, 0, this.canvas?.width ?? 0, this.canvas?.height ?? 0);
-        this.imagesCollection.forEach((image, index) => {
+        this._imagesCollection.forEach((image, index) => {
             if(this.canvas) {
                 const { width, height } = this.getNormalizedImageSizes(image)
                 const { x, y } = this.getDeltas(width, height)
