@@ -172,14 +172,9 @@ describe('Canvas carousel module', () => {
 		mockImagesCollection.mockReset()
 	});
 
-	test('Check resize observer - with defined aspectRatio', () => {
+	test('Check resize observer', () => {
 		const canvasCarousel = new CanvasCarousel(baseOptions);
 		expect(canvasCarousel.resizeObserver).toBeInstanceOf(ResizeObserver);
-	});
-
-	test('Check resize observer - with undefined aspectRatio', () => {
-		const canvasCarousel = new CanvasCarousel({ ...baseOptions, aspectRatio: void 0 });
-		expect(canvasCarousel.resizeObserver).not.toBeInstanceOf(ResizeObserver)
 	});
 
 	test('Canvas scroll - go to next from 0', () => {

@@ -1,6 +1,6 @@
 {
   "name": "@ipno84/canvas-carousel",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Javascript module that handle an image carousel inside a canvas context",
   "main": "index.js",
   "repository": "https://github.com/Ipno84/canvas-carousel.git",
