@@ -372,6 +372,24 @@ class CanvasCarousel {
     }
 
     /**
+     * It use goToIndex method to move the canvas carousel to the first slide
+     *
+     * @memberof CanvasCarousel
+     */
+     public goToFirst(): void {
+        this.goToIndex(0)
+    }
+
+    /**
+     * It use goToIndex method to move the canvas carousel to the last slide
+     *
+     * @memberof CanvasCarousel
+     */
+     public goToLast(): void {
+        this.goToIndex(this.options.imagesPath.length - 1)
+    }
+
+    /**
      * This method will draw images in canvas context setting properly deltas, sizes and positioning
      *
      * @private

@@ -185,34 +185,57 @@ describe('Canvas carousel module', () => {
 	test('Canvas scroll - go to next from 0', () => {
 		const canvasCarousel = new CanvasCarousel(baseOptions);
 		expect(canvasCarousel['canvasPosition']['deltaX']).toBe(0)
+		expect(canvasCarousel.currentIndex).toBe(0)
 		canvasCarousel.goToNext()
 		expect(canvasCarousel['canvasPosition']['deltaX']).toBe(-300)
+		expect(canvasCarousel.currentIndex).toBe(1)
 		canvasCarousel.goToNext()
 		expect(canvasCarousel['canvasPosition']['deltaX']).toBe(-600)
+		expect(canvasCarousel.currentIndex).toBe(2)
 		canvasCarousel.goToNext()
 		expect(canvasCarousel['canvasPosition']['deltaX']).toBe(-900)
+		expect(canvasCarousel.currentIndex).toBe(3)
 		canvasCarousel.goToNext()
 		expect(canvasCarousel['canvasPosition']['deltaX']).toBe(-900)
+		expect(canvasCarousel.currentIndex).toBe(3)
 	});
 
 	test('Canvas scroll - go to prev from 0', () => {
 		const canvasCarousel = new CanvasCarousel(baseOptions);
 		expect(canvasCarousel['canvasPosition']['deltaX']).toBe(0)
+		expect(canvasCarousel.currentIndex).toBe(0)
 		canvasCarousel.goToPrev()
 		expect(canvasCarousel['canvasPosition']['deltaX']).toBe(0)
+		expect(canvasCarousel.currentIndex).toBe(0)
 	});
 
 	test('Canvas scroll - go to right index', () => {
 		const canvasCarousel = new CanvasCarousel(baseOptions);
 		expect(canvasCarousel['canvasPosition']['deltaX']).toBe(0)
+		expect(canvasCarousel.currentIndex).toBe(0)
 		canvasCarousel.goToIndex(3)
 		expect(canvasCarousel['canvasPosition']['deltaX']).toBe(-900)
+		expect(canvasCarousel.currentIndex).toBe(3)
 	});
 
 	test('Canvas scroll - go to wrong index', () => {
 		const canvasCarousel = new CanvasCarousel(baseOptions);
 		expect(canvasCarousel['canvasPosition']['deltaX']).toBe(0)
+		expect(canvasCarousel.currentIndex).toBe(0)
 		canvasCarousel.goToIndex(6)
 		expect(canvasCarousel['canvasPosition']['deltaX']).toBe(0)
+		expect(canvasCarousel.currentIndex).toBe(0)
+	});
+
+	test('Canvas scroll - go to last and back to the first', () => {
+		const canvasCarousel = new CanvasCarousel(baseOptions);
+		expect(canvasCarousel['canvasPosition']['deltaX']).toBe(0)
+		expect(canvasCarousel.currentIndex).toBe(0)
+		canvasCarousel.goToLast()
+		expect(canvasCarousel['canvasPosition']['deltaX']).toBe(-900)
+		expect(canvasCarousel.currentIndex).toBe(3)
+		canvasCarousel.goToFirst()
+		expect(canvasCarousel['canvasPosition']['deltaX']).toBe(0)
+		expect(canvasCarousel.currentIndex).toBe(0)
 	});
 });
