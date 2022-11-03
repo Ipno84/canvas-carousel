@@ -83,7 +83,7 @@ class CanvasCarousel {
         this.setupSize()
         this.prepareImages()
 
-        if(this.canvas?.parentElement && this.options.aspectRatio) {
+        if(this.canvas?.parentElement) {
             this._resizeObserver = new ResizeObserver(this.onResize);
             this.resizeObserver?.observe(this.canvas.parentElement);
         }
