@@ -4,7 +4,7 @@ const path = require('path');
 module.exports = Object.assign(config, {
 	entry: { 'canvas-carousel': './src/start.ts' },
 	output: {
-		path: path.resolve(__dirname, 'serve/js'),
+		path: path.resolve(__dirname, 'example/js'),
 		filename: '[name].min.js',
 		libraryTarget: 'umd',
 		library: 'canvas-carousel',
