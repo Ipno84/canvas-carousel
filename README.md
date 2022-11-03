@@ -59,6 +59,96 @@ The buttons immediately below the canvas have the functions to advance to the ne
 
 ## How to use it?
 
-Initialising a controller for a carousel on a canvas element is extremely simple. Simply instantiate the class with the following arguments
+Initialising a controller for a carousel on a canvas element is extremely simple. Simply instantiate the class with an argument that should implement the CanvasCarouselOptions interface.<br/>
+
+Here's the interfaces members:
+
+### selector: string | undefined
+
+It will be used to get element reference from DOM if it has not been provided by the *node* option
+
+### node: HTMLCanvasElement | undefined
+
+It will be used to as element reference from DOM without the need to access to it once again. It will be directly assigned to CanvasCarousel.prototype.canvas
+
+### imagesPath: string[]
+
+An array of images urls that will be used to draw the canvas. Each image will be set at the center of related slide maintaining its aspect ratio
+
+### aspectRatio: number | undefined
+
+It represents the ratio between width and height to be assigned to the carousel, it will be used to manage the fluid responsiveness
+
+### resizeTimeoutReaction: number | undefined - default 300
+
+When the width of the container in which the canvas is placed is reduced, methods are launched to manage responsiveness (setting dimensions, proportions, etc.). To avoid overloading the browser with an excessive number of callbacks, a debounce is applied to delay and cancel unnecessary executions. The duration of the debounce is, in fact, decided by this option
+
+### canvasWidth, canvasHeight: number | undefined
+
+They represent the width and height to be allocated to the canvas. These dimensions will be retained and may not vary, preventing the element's responsive behaviour. Setting these two options (they must be set at the same time to work correctly, otherwise the behaviour will be ignored) instead of the aspectRatio parameter will improve performance since no listener needs to be implemented via the browser API ResizeObserver
 
 ## APIs
+
+The class exposes certain properties and methods that allow interaction with the instance by obtaining information or performing a particular behaviour as explained below.
+
+### options: CanvasCarouselOptions
+
+It will be possible to consult the options set at initialisation, but not to set them again (please refer to future versions). This information is contained in this class property
+
+### canvas: HTMLCanvasElement | null
+
+Property in which the reference in the canvas DOM obtained via node or selector option is stored
+
+### context: CanvasRenderingContext2D | null | undefined
+
+The canvas-related context is used internally to perform image draw operations. Exposing it gives developers the ability to interact with it by making custom animations
+
+### currentIndex: number
+
+Indicates the reference index of the current slide
+
+### resizeObserver: ResizeObserver | null
+
+Indicates the reference to the observer to intercept any changes in the width of the element containing the canvas. It is not set if the aspectRatio option is not present and set.
+
+### imagesCollection: HTMLImageElement[]
+
+A list of Image objects generated from the imagesPath option will be used to print the images in the canvas and manage the maintenance of the aspect ratio of the images within it
+
+### goToIndex(index: number): void
+
+Basic method that allows animation of the canvas without direct interaction with it. It is the basis for all other more specific methods related to the same functionality
+
+### goToNext(): void
+
+Use goToIndex to go to the next slide
+
+### goToPrev(): void
+
+Use goToIndex to go to the previous slide
+
+### goToFirst(): void
+
+Use goToIndex to go to the first slide of the list
+
+### goToLast(): void
+
+Use goToIndex to go to the last slide of the list
+
+## Tests
+
+The test environment is, at present, dedicated exclusively to unit tests. For behavior related to direct interaction with user drag-and-drop and snapshot handling, it is considered appropriate to defer to the e2e test implementation.
+The current test suite does not fully cover the needs of the module; this is only an initial implementation.
+To launch the tests, one of the following terminal commands should be run.
+
+```
+// Execution carried out only once
+yarn test
+
+// During execution, affected files are observed, and when a change occurs, the suite is checked again
+yarn test:watch
+```
+
+## Build and deploy
+
+No real build and deploy routine has been implemented, but a set of automated actions have been provided that will allow code to be compiled in various formats and generate an automated changelog. To do this, it will be sufficient to launch one of the scripts provided in package.json related to version incrementing, and hooks will be triggered to launch tests (before the version change) and to generate changelogs and launch build and transpilation
