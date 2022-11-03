@@ -52,6 +52,20 @@ class CanvasCarousel {
     }
 
     /**
+     * It assign to internal canvas class property the proper value using the provided one or the selector
+     *
+     * @private
+     * @memberof CanvasCarousel
+     */
+    private handleCanvasAssignment(): void {
+        if(this.options.node && this.options.node instanceof HTMLCanvasElement) {
+            this._canvas = this.options.node
+        } else if(this.options.selector) {
+            this._canvas = document.querySelector(this.options.selector)
+        }
+    }
+
+    /**
      * Asyncronously initialize elements. It's triggered in constructor right after setters and method bindings
      * It will instantiate canvas element and its context, setup sizes of the canvas itself (using options),
      * and fetch remote images. It also trigger a resize observer that will observe the parent node of the canvas
@@ -61,7 +75,7 @@ class CanvasCarousel {
      * @memberof CanvasCarousel
      */
     private onInit(): void {
-        this._canvas = document.querySelector(this.options.selector)
+        this.handleCanvasAssignment()
         this._context = this.canvas?.getContext('2d')
 
         if(this.context) this.context.imageSmoothingEnabled = true

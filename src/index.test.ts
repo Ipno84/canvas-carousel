@@ -35,6 +35,17 @@ describe('Canvas carousel module', () => {
 	test('Check selector', () => {
 		const canvasCarousel = new CanvasCarousel(baseOptions);
 		expect(canvasCarousel.options.selector).toBe(selector);
+		expect(canvasCarousel.options.node).toBeUndefined();
+	});
+
+	test('Check node', () => {
+		const canvasElement = document.querySelector<HTMLCanvasElement>('#carousel')
+		if(canvasElement) {
+			const canvasCarousel = new CanvasCarousel({ ...baseOptions, selector: '', node: canvasElement });
+			expect(canvasCarousel.options.selector).toBe("")
+		} else {
+			expect(false).toBeTruthy()
+		}
 	});
 
 	test('Check images', () => {
@@ -57,6 +68,18 @@ describe('Canvas carousel module', () => {
 		expect(CanvasCarousel.prototype['onInit']).toHaveBeenCalled()
 
 		CanvasCarousel.prototype['onInit'] = tmpMethod
+	});
+
+	test('Check handleCanvasAssignement called', () => {
+		let tmpMethod = CanvasCarousel.prototype['handleCanvasAssignment']
+
+		CanvasCarousel.prototype['handleCanvasAssignment'] = jest.fn().mockImplementation(() => void 0);
+
+		new CanvasCarousel(baseOptions);
+
+		expect(CanvasCarousel.prototype['handleCanvasAssignment']).toHaveBeenCalled()
+
+		CanvasCarousel.prototype['handleCanvasAssignment'] = tmpMethod
 	});
 
 
