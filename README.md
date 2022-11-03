@@ -4,13 +4,24 @@ Canvas Carousel is a module written with the objective of completing the task fo
 
 ## What is this?!
 
-It is nothing more and nothing less than a basic touch image carouseli written entirely in typescript and framework agnostic, allowing a carousel of images to be generated within a canvas element.<br />
-The carousel responds both to dragging by single finger touch, whether the device responds to touch on the screen, and to dragging by mouse pressure and movement.<br />
-Furthermore, depending on the options set during initialisation, it can be fluid responsive.
+It is nothing more and nothing less than a basic touch image carousel written entirely in typescript and framework agnostic, allowing a carousel of images to be generated within a canvas element.<br />
+The carousel responds both to dragging by single finger touch, whether the device responds to touch events, and to dragging by mouse pressure and movement.<br />
+Furthermore, depending on the options set during initialisation, it can also be fluid responsive.
 
 ## Can I see it in action?
 
-To be able to see it in action, at present, it is necessary to clone the repository and run the package in development mode (I may publish it in the future, but to do so, I would like the development to be more solid and tested without considering that the module deserves to have further functionality developed (snap scroll, momentum, etc.)
+If you just want to have a quick check, you can run the code in the example folder.
+To do this you have to be sure that you have installed global dependencies (as per step 1 in the next paragraph), that you have cloned the repository (step 2), and that you have globally installed the *nws* module. In case you haven't installed it yet and/or you don't want to, you can proceed with step 3 and install project dependencies (nws is indeed one of them). Now, from the terminal, you can go to the project folder and run one of the following commands
+
+```
+// If you have nws globally installed
+nws -d ./example
+
+// If you want to use workspace package
+yarn example
+```
+
+If you want to see the module working in development mode (in this mode you can change options in ./src/start.ts and test and experiment with different features) you need to follow all the steps below
 
 ---
 
@@ -152,3 +163,9 @@ yarn test:watch
 ## Build and deploy
 
 No real build and deploy routine has been implemented, but a set of automated actions have been provided that will allow code to be compiled in various formats and generate an automated changelog. To do this, it will be sufficient to launch one of the scripts provided in package.json related to version incrementing, and hooks will be triggered to launch tests (before the version change) and to generate changelogs and launch build and transpilation
+
+## TO DO
+
+* [ ] snap
+* [ ] momentum
+* [ ] elastic
